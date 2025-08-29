@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # MariaDB Database Service
+  mariadb:
+    image: mariadb:10.11
+    container_name: video-transcoding-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - video-transcoding-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Video Transcoding Application Service
+  app:
+    build: .
+    container_name: video-transcoding-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - UPLOADS_DIR=/app/uploads
+      - TRANSCODED_DIR=/app/transcoded
+    ports:
+      - "${PORT}:3000"
+    volumes:
+      - video_uploads:/app/uploads
+      - video_transcoded:/app/transcoded
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - video-transcoding-network
+
+volumes:
+  mariadb_data:
+    driver: local
+  video_uploads:
+    driver: local
+  video_transcoded:
+    driver: local
+
+networks:
+  video-transcoding-network:
+    driver: bridge
