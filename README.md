@@ -113,7 +113,7 @@ docker-compose up -d
 │   ├── index.html
 │   ├── app.js
 │   └── styles.css
-└── docker/
+└── db/
     └── init.sql           # Database initialization
 ```
 

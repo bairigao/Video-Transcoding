@@ -1,9 +1,9 @@
 const { google } = require('googleapis');
-require('dotenv').config();
+const config = require('../../config/app');
 
 class YouTubeService {
     constructor() {
-        this.apiKey = process.env.YOUTUBE_API_KEY;
+        this.apiKey = config.youtubeApiKey;
         this.youtube = google.youtube({
             version: 'v3',
             auth: this.apiKey

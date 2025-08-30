@@ -6,3 +6,6 @@ uploads/
 transcoded/
 aws-deploy.sh
 deploy.sh
+database.js.backup
+youtube-service.js.backup
+RESTRUCTURE_SUMMARY.md
