@@ -21,9 +21,15 @@ class TranscodeJob {
         return jobData;
     }
 
-    // Get transcode jobs by user ID
+    // Get transcode jobs by user ID with video details
     static async findByUserId(userId) {
-        const sql = 'SELECT * FROM transcode_jobs WHERE user_id = ? ORDER BY created_at DESC';
+        const sql = `
+            SELECT tj.*, v.original_name as original_video_name, v.filename as original_filename
+            FROM transcode_jobs tj
+            LEFT JOIN videos v ON tj.video_id = v.id
+            WHERE tj.user_id = ? 
+            ORDER BY tj.created_at DESC
+        `;
         return await Database.query(sql, [userId]);
     }
 
@@ -43,22 +49,39 @@ class TranscodeJob {
 
     // Update transcode job status
     static async updateStatus(jobId, status, errorMessage = null, completedAt = null) {
-        let sql = 'UPDATE transcode_jobs SET status = ?';
-        let params = [status];
-
-        if (errorMessage) {
-            sql += ', error_message = ?';
-            params.push(errorMessage);
+        // Ensure we have valid values or null (not undefined)
+        const safeErrorMessage = errorMessage || null;
+        let safeCompletedAt = completedAt || null;
+        const safeJobId = jobId;
+        
+        // Validate required parameters
+        if (!safeJobId || !status) {
+            throw new Error('JobId and status are required for updateStatus');
         }
-
-        if (completedAt) {
-            sql += ', completed_at = ?';
-            params.push(completedAt);
+        
+        // Convert ISO 8601 timestamp to MySQL-compatible format
+        if (safeCompletedAt && typeof safeCompletedAt === 'string') {
+            try {
+                // Convert ISO string to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
+                const date = new Date(safeCompletedAt);
+                safeCompletedAt = date.toISOString().slice(0, 19).replace('T', ' ');
+                console.log(`Converting timestamp ${completedAt} to MySQL format: ${safeCompletedAt}`);
+            } catch (error) {
+                console.warn(`Invalid date format: ${safeCompletedAt}, setting to current time`);
+                const now = new Date();
+                safeCompletedAt = now.toISOString().slice(0, 19).replace('T', ' ');
+            }
         }
-
-        sql += ' WHERE id = ?';
-        params.push(jobId);
-
+        
+        const sql = `
+            UPDATE transcode_jobs 
+            SET status = ?, error_message = ?, completed_at = ? 
+            WHERE id = ?
+        `;
+        const params = [status, safeErrorMessage, safeCompletedAt, safeJobId];
+        
+        console.log(`Updating job ${safeJobId} with status: ${status}, error: ${safeErrorMessage}, completed: ${safeCompletedAt}`);
+        
         await Database.query(sql, params);
     }
 

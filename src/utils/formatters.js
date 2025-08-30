@@ -42,7 +42,9 @@ const formatJobForApi = (job) => {
         status: job.status,
         errorMessage: job.error_message,
         createdAt: job.created_at,
-        completedAt: job.completed_at
+        completedAt: job.completed_at,
+        originalVideoName: job.original_video_name || 'Unknown Video',
+        originalFilename: job.original_filename
     };
 };
 

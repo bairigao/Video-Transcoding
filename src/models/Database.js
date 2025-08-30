@@ -11,10 +11,21 @@ class Database {
 
     async query(sql, params = []) {
         try {
-            const [rows] = await this.pool.execute(sql, params);
+            // Log query for debugging (only in development)
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Executing SQL:', sql);
+                console.log('Parameters:', params);
+            }
+            
+            // Validate parameters - ensure no undefined values
+            const safeParams = params.map(param => param === undefined ? null : param);
+            
+            const [rows] = await this.pool.execute(sql, safeParams);
             return rows;
         } catch (error) {
             console.error('Database query error:', error);
+            console.error('SQL:', sql);
+            console.error('Parameters:', params);
             throw error;
         }
     }

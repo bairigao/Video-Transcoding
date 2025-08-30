@@ -321,29 +321,39 @@ function displayJobs(jobs) {
     // Sort jobs by creation date (newest first)
     jobs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
-    jobsList.innerHTML = jobs.map(job => `
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Transcode to ${job.format.toUpperCase()}</div>
-                <span class="status-badge status-${job.status}">${job.status}</span>
-            </div>
-            <div class="job-info">
-                <div>Started: ${new Date(job.createdAt).toLocaleString()}</div>
-                ${job.completedAt ? `<div>Completed: ${new Date(job.completedAt).toLocaleString()}</div>` : ''}
-                ${job.error ? `<div style="color: #e74c3c;">Error: ${escapeHtml(job.error)}</div>` : ''}
-            </div>
-            ${job.status === 'completed' ? `
-                <div style="margin-top: 10px;">
-                    <button class="btn btn-success btn-small" onclick="downloadVideo('transcoded', '${job.outputFilename}')">
-                        Download ${job.format.toUpperCase()}
-                    </button>
-                    <button class="btn btn-danger btn-small" onclick="deleteTranscodedVideo('${job.id}', '${job.format.toUpperCase()}')">
-                        Delete ${job.format.toUpperCase()}
-                    </button>
+    jobsList.innerHTML = jobs.map(job => {
+        // Extract the display name for the original video
+        const originalVideoName = job.originalVideoName || 'Unknown Video';
+        const shortVideoName = originalVideoName.length > 30 
+            ? originalVideoName.substring(0, 30) + '...' 
+            : originalVideoName;
+        
+        return `
+            <div class="job-card">
+                <div class="job-header">
+                    <div class="job-title" title="${escapeHtml(originalVideoName)}">
+                        ${escapeHtml(shortVideoName)} → ${job.format.toUpperCase()}
+                    </div>
+                    <span class="status-badge status-${job.status}">${job.status}</span>
                 </div>
-            ` : ''}
-        </div>
-    `).join('');
+                <div class="job-info">
+                    <div>Started: ${new Date(job.createdAt).toLocaleString()}</div>
+                    ${job.completedAt ? `<div>Completed: ${new Date(job.completedAt).toLocaleString()}</div>` : ''}
+                    ${job.errorMessage ? `<div style="color: #e74c3c;">Error: ${escapeHtml(job.errorMessage)}</div>` : ''}
+                </div>
+                ${job.status === 'completed' ? `
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-success btn-small" onclick="downloadVideo('transcoded', '${job.outputFilename}')">
+                            Download ${job.format.toUpperCase()}
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteTranscodedVideo('${job.id}', '${job.format.toUpperCase()}')">
+                            Delete ${job.format.toUpperCase()}
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
 }
 
 // Download function
