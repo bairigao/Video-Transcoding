@@ -21,8 +21,12 @@ class VideoController {
 
             const videoFile = req.files.video;
             
+            // Log the actual MIME type for debugging
+            console.log(`Upload attempt - File: ${videoFile.name}, MIME type: '${videoFile.mimetype}'`);
+            
             if (!FileUtils.validateFileType(videoFile.mimetype, config.allowedVideoTypes)) {
-                return res.status(400).json({ error: 'Invalid file type. Only video files are allowed.' });
+                console.log(`Rejected MIME type: '${videoFile.mimetype}', Allowed types:`, config.allowedVideoTypes);
+                return res.status(400).json({ error: `Invalid file type '${videoFile.mimetype}'. Only video files are allowed.` });
             }
 
             const uniqueFilename = FileUtils.generateUniqueFilename(videoFile.name);

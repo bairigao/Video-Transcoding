@@ -1,5 +1,4 @@
 node_modules/
-.env
 *.log
 .DS_Store
 uploads/
@@ -9,3 +8,4 @@ deploy.sh
 database.js.backup
 youtube-service.js.backup
 RESTRUCTURE_SUMMARY.md
+AWS_DEPLOYMENT_GUIDE.md

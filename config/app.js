@@ -15,7 +15,7 @@ const config = {
     youtubeApiKey: process.env.YOUTUBE_API_KEY,
     
     // File upload configuration
-    allowedVideoTypes: ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv'],
+    allowedVideoTypes: ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/wmv', 'video/flv'],
     allowedFormats: ['mp4', 'avi', 'mov', 'webm']
 };
 

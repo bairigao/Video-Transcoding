@@ -3,7 +3,7 @@ FROM node:18-alpine
 
 # Install FFmpeg
 RUN apk add --no-cache ffmpeg
-
+RUN apk add --no-cache curl
 # Create app directory
 WORKDIR /app
 

@@ -45,13 +45,16 @@ class FileUtils {
     }
 
     /**
-     * Validate file type
+     * Validate file type (case-insensitive)
      * @param {string} mimeType - File MIME type
      * @param {Array} allowedTypes - Array of allowed MIME types
      * @returns {boolean} True if file type is allowed
      */
     static validateFileType(mimeType, allowedTypes) {
-        return allowedTypes.includes(mimeType);
+        // Convert both the input MIME type and allowed types to lowercase for case-insensitive comparison
+        const normalizedMimeType = mimeType.toLowerCase();
+        const normalizedAllowedTypes = allowedTypes.map(type => type.toLowerCase());
+        return normalizedAllowedTypes.includes(normalizedMimeType);
     }
 }
 
