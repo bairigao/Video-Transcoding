@@ -496,7 +496,7 @@ async function deleteVideo(videoId, videoName) {
         const data = await response.json();
         
         if (response.ok) {
-            showMessage('Original video deleted successfully! Transcoded versions remain available.', 'success');
+            showMessage('Original video deleted successfully!', 'success');
             loadVideos();
             // Note: We don't reload jobs since transcoded videos are kept
         } else {

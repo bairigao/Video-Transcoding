@@ -17,9 +17,10 @@ router.use('/videos', videoRoutes);
 router.use('/transcode', transcodeRoutes);
 router.use('/download', downloadRoutes);
 
-// Legacy endpoints for backward compatibility
+
 router.post('/login', authRoutes);
 router.get('/jobs', transcodeRoutes);
+router.delete('/jobs/:jobId', transcodeRoutes);
 router.post('/upload', videoRoutes);
 
 module.exports = router;

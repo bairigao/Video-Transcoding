@@ -33,7 +33,7 @@ const formatVideosForApi = (videos) => {
 const formatJobForApi = (job) => {
     return {
         id: job.id,
-        videoId: job.video_id,
+        videoId: job.video_id, // May be null if original video was deleted
         userId: job.user_id,
         inputPath: job.input_path,
         outputPath: job.output_path,
@@ -43,7 +43,7 @@ const formatJobForApi = (job) => {
         errorMessage: job.error_message,
         createdAt: job.created_at,
         completedAt: job.completed_at,
-        originalVideoName: job.original_video_name || 'Unknown Video',
+        originalVideoName: job.original_video_name || 'Deleted Video',
         originalFilename: job.original_filename
     };
 };

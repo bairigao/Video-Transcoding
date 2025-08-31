@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS videos (
 -- Create transcode_jobs table
 CREATE TABLE IF NOT EXISTS transcode_jobs (
     id VARCHAR(50) PRIMARY KEY,
-    video_id VARCHAR(50) NOT NULL,
+    video_id VARCHAR(50) NULL, 
     user_id INT NOT NULL,
     input_path VARCHAR(500) NOT NULL,
     output_path VARCHAR(500) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS transcode_jobs (
     error_message TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP NULL,
-    FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE,
+    FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE SET NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_video_id (video_id),
     INDEX idx_user_id (user_id),
